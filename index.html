@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Finance Tracker</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url("https://www.shutterstock.com/shutterstock/photos/2214443557/display_1500/stock-photo-white-card-with-the-text-keep-track-of-your-expenses-on-wooden-desk-background-business-concept-2214443557.jpg") no-repeat center center/cover;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 0;
+  }
+  .container {
+    background: hwb(0 100% 0% / 0.69);
+    padding: 50px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 420px;
+    width: 90%;
+    animation: fadeIn 1s ease-in-out;
+    position: relative;
+    z-index: 1;
+  }
+  h1 {
+    color: #1976d2;
+    margin-bottom: 15px;
+    font-size: 28px;
+  }
+  p {
+    color: #333;
+    margin-bottom: 35px;
+    font-size: 16px;
+  }
+  .buttons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 12px 0;
+    padding: 14px;
+    color: black;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: 0.3s;
+    font-size: 16px;
+    box-shadow: 0 3px 8px rgba(25,118,210,0.2);
+    background: rgba(255,255,255,0.9);
+  }
+  .buttons a img {
+    width: 22px;
+    height: 22px;
+  }
+  .buttons a:hover {
+    background: #0d47a1;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(25,118,210,0.3);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Smart Finance Tracker</h1>
+    <p>Track your income, expenses, and goals with ease 🚀</p>
+    <div class="buttons">
+      <a href="user login.html">
+        <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="User Icon">
+        User Login
+      </a>
+      <a href="admin login.html">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Icon">
+        Admin Login
+      </a>
+    </div>
+  </div>
+</body>
+</html>
