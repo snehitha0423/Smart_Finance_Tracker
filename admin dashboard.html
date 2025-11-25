@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { 
+  font-family: 'Segoe UI', Arial, 
+  sans-serif; margin:0; 
+  background:#f4f6f8; 
+  color:#333; 
+  transition:background 0.3s,
+  color 0.3s; 
+}
+header { 
+  background:linear-gradient(90deg, rgb(227, 88, 111), rgb(240, 116, 136)); 
+  color:#fff; 
+  padding:15px 25px; 
+  display:flex; 
+  justify-content:space-between; 
+  align-items:center; 
+}
+header h1 { 
+  margin:0; 
+  font-size:24px; 
+  letter-spacing:0.5px; 
+}
+header .admin-profile { 
+  display:flex; 
+  align-items:center; 
+  gap:15px; 
+}
+.admin-profile img { 
+  width:40px; 
+  height:40px; 
+  border-radius:50%;
+   border:2px solid #fff; 
+   object-fit:cover; 
+  }
+.theme-toggle, .logout-btn { 
+  cursor:pointer; 
+  border:none;
+  border-radius:6px; 
+  padding:8px 14px; color:#fff; 
+}
+.theme-toggle { 
+  background:none; 
+  font-size:20px; 
+  transition:transform 0.3s;
+ }
+.theme-toggle:hover { 
+  transform:rotate(20deg); 
+}
+.logout-btn { 
+  background:black; 
+}
+.logout-btn:hover { 
+  background:#b71c1c; 
+}
+.container { 
+  padding:20px; 
+  max-width:1100px; 
+  margin:auto; 
+}
+.summary-box { 
+  display:flex; 
+  justify-content:space-around; 
+  flex-wrap:wrap; 
+  gap:15px; 
+  margin-bottom:25px; 
+}
+.box { 
+  padding:20px; 
+  border-radius:10px; 
+  box-shadow:0 2px 8px rgba(0,0,0,0.1); 
+  flex:1; 
+  text-align:center; 
+  min-width:180px; 
+  cursor:pointer; 
+  color:#fff; 
+  transition:transform 0.3s, opacity 0.3s; 
+}
+.box:hover { 
+  transform:translateY(-4px); 
+  opacity:0.9; 
+}
+.users-box { 
+  background:#7e57c2; 
+}
+.admins-box { 
+  background:#fbc02d; 
+  color:#333;
+ }
+.balance-box { 
+  background:#29b6f6; 
+}
+.container > div:nth-of-type(2) { 
+    align-items: center; 
+}
+table { 
+  width:100%; 
+  border-collapse:separate; 
+  border-spacing:0; 
+  background:#fff; 
+  border-radius:10px; 
+  box-shadow:0 2px 10px rgba(0,0,0,0.1); 
+  overflow:hidden; 
+  font-size:15px; 
+  margin-top:10px; 
+}
+th, td { 
+  padding:14px 16px;
+  text-align:left; 
+  border-bottom:1px solid #e0e0e0; 
+}
+th { 
+  background:#1976d2; 
+  color:#fff; 
+  font-weight:600; 
+  text-transform:uppercase; 
+  letter-spacing:0.05em; 
+}
+tr:hover { 
+  background:#f5f7fa; 
+  transition:background 0.2s ease;
+}
+th input { 
+  margin-top:6px; 
+  width:85%; 
+  padding:5px; 
+  font-size:13px; 
+  border-radius:5px;
+   border:1px solid #ccc; 
+  }
+.action-buttons { 
+  display:flex; 
+  justify-content:center; 
+  gap:8px; 
+}
+.action-buttons button { 
+  border:none;
+  border-radius:6px; 
+  padding:6px 10px; 
+  font-weight:500; 
+  cursor:pointer; 
+  color:#fff; 
+  transition:background 0.3s ease; 
+}
+.action-buttons .view { 
+  background:#42a5f5; 
+}
+.action-buttons .delete { 
+  background:#ef5350; 
+}
+.action-buttons .view:hover { 
+  background:#1e88e5; 
+}
+.action-buttons .delete:hover { 
+  background:#d32f2f; 
+}
+#userModal, #balanceModal, #userListModal, #adminListModal { 
+  display:none; 
+  position:fixed; 
+  top:0; left:0; 
+  width:100%; 
+  height:100%; 
+  background:rgba(0,0,0,0.5); 
+  justify-content:center; 
+  align-items:center; 
+  z-index:1000; 
+}
+.modal-content { 
+  background:#fff; 
+  padding:20px; 
+  border-radius:10px; 
+  width:90%; 
+  max-width:900px; 
+  max-height:90%; 
+  overflow-y:auto; 
+  position:relative; 
+  box-shadow:0 4px 14px rgba(0,0,0,0.2); 
+}
+.closeModal { 
+  position:absolute; 
+  top:10px; 
+  right:10px; 
+  background:#c62828; 
+  border:none; 
+  color:#fff; 
+  border-radius:6px; 
+  cursor:pointer; 
+  padding:5px 10px; 
+}
+.closeModal:hover { 
+  background:#b71c1c; 
+}
+.download-btn { 
+  margin:10px 0; 
+  padding:6px 12px; 
+  background:#2e7d32; 
+  border:none; 
+  border-radius:6px; 
+  color:#fff; 
+  cursor:pointer; 
+}
+.download-btn:hover { 
+  background:#1b5e20;
+}
+body.dark-mode { 
+  background:#1e1e1e; 
+  color:#fff; 
+}
+body.dark-mode header { 
+  background:#333; 
+}
+body.dark-mode table { 
+  background:#2e2e2e; 
+  color:#fff; 
+}
+body.dark-mode th { 
+  background:#555; 
+}
+@media(max-width:600px){
+  .summary-box { flex-direction:column; 
+    align-items:center; 
+  }
+  table th, table td { 
+    padding:10px; 
+    font-size:14px; 
+  }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛠 Admin Dashboard</h1>
+  <div class="admin-profile">
+    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin">
+    <span id="adminUsername">Admin</span>
+    <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</header>
+<div class="container">
+  <div class="summary-box">
+    <div class="box users-box" onclick="showUserList()"> 
+      <h3>Total Users</h3><p id="totalUsers">0</p>
+    </div>
+    <div class="box admins-box" onclick="showAdminList()"> 
+      <h3>Total Admins</h3><p id="totalAdmins">0</p>
+    </div>
+    <div class="box balance-box" onclick="showBalanceRanking()"> 
+      <h3>Net Balance Ranking</h3><p id="netBalanceValue">Click to View</p>
+    </div>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:15px;">
+    <h3 style="margin:0;">Filter By Month:</h3>
+    <input type="month" id="globalFilterMonthYear" onchange="updateDashboardMetrics()">
+    <button onclick="document.getElementById('globalFilterMonthYear').value=''; updateDashboardMetrics();" style="padding:6px 12px;border:none;border-radius:6px;background:#757575;color:#fff;cursor:pointer;">Clear</button>
+  </div>
+  <h3>All Users</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Name<br><input type="text" onkeyup="filterTable(0,this.value)" placeholder="Filter Name"></th>
+        <th>Email<br><input type="text" onkeyup="filterTable(1,this.value)" placeholder="Filter Email"></th>
+        <th>Transactions<br><input type="number" onkeyup="filterTable(2,this.value)" placeholder="Filter Count"></th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="userTable"></tbody>
+  </table>
+</div>
+<div id="userModal">
+  <div class="modal-content">
+    <button class="closeModal" onclick="closeModal('userModal')">X</button>
+    <h2 id="modalName"></h2>
+    <p>Email: <span id="modalEmail"></span></p>
+    <p>Balance: ₹<span id="modalBalance"></span></p>
+    <button class="download-btn" id="blockUserBtn" onclick="toggleBlockUser()">Block User</button>
+    <h4>Transactions:</h4>
+    <div class="filters">
+      <select id="filterCategory" onchange="applyFilters()">
+        <option value="">All Categories</option>
+        <option>Food</option><option>Rent</option><option>Shopping</option>
+        <option>Transport</option><option>Utilities</option><option>Entertainment</option>
+      </select>
+      <select id="filterType" onchange="applyFilters()">
+        <option value="">All Types</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+      </select>
+      <input type="month" id="filterMonthYear" onchange="applyFilters()">
+    </div>
+    <table>
+      <thead><tr><th>Date</th><th>Category</th><th>Reason</th><th>Amount</th><th>Type</th></tr></thead>
+      <tbody id="modalTransactions"></tbody>
+    </table>
+    <button class="download-btn" onclick="downloadCSV()">⬇ CSV</button>    
+    <h4>Monthly Goals: <span id="goalMonthDisplayAdmin"></span></h4>
+    <div id="modalGoals" style="margin-bottom: 20px;">
+      <p>No goals set for this month.</p>
+    </div>
+    <h4>Expenses by Category:</h4>
+    <canvas id="modalChart" width="400" height="200"></canvas>
+  </div>
+</div>
+<div id="balanceModal">
+  <div class="modal-content">
+    <button class="closeModal" onclick="closeModal('balanceModal')">X</button>
+    <h2>Users Sorted by Balance</h2>
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Balance</th></tr></thead>
+      <tbody id="balanceTable"></tbody>
+    </table>
+  </div>
+</div>
+<div id="userListModal">
+  <div class="modal-content">
+    <button class="closeModal" onclick="closeModal('userListModal')">X</button>
+    <h2>All Users</h2>
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Balance</th></tr></thead>
+      <tbody id="userListTable"></tbody>
+    </table>
+  </div>
+</div>
+<div id="adminListModal">
+  <div class="modal-content">
+    <button class="closeModal" onclick="closeModal('adminListModal')">X</button>
+    <h2>All Admins</h2>
+    <table>
+      <thead><tr><th>Name</th><th>Email</th></tr></thead>
+      <tbody id="adminListTable"></tbody>
+    </table>
+  </div>
+</div>
+<script>
+let currentAdmin = JSON.parse(localStorage.getItem('currentAdmin')) || {name:"Admin", email:"admin@example.com"};
+let users = JSON.parse(localStorage.getItem('users')) || [];
+let admins = JSON.parse(localStorage.getItem('admins')) || [currentAdmin];
+users = users.map(u => ({
+    ...u,
+    isBlocked: u.isBlocked === undefined ? false : u.isBlocked 
+}));
+localStorage.setItem('users', JSON.stringify(users));
+document.getElementById('adminUsername').textContent = currentAdmin.name;
+document.getElementById('totalUsers').textContent = users.length;
+document.getElementById('totalAdmins').textContent = admins.length;
+let modalGraph = null;
+let modalUser = null; 
+function getUserBalance(user){
+  return (user.transactions||[]).reduce((t,tr)=>tr.type==="Income"?t+Number(tr.amount):t-Number(tr.amount),0);
+}
+function getMonthlyTransactions(user, monthYear) {
+    if (!monthYear) return user.transactions || [];
+    return (user.transactions || []).filter(t => t.date.startsWith(monthYear));
+}
+function getMonthlyBalance(user, monthYear) {
+    const monthlyTransactions = getMonthlyTransactions(user, monthYear);
+    return monthlyTransactions.reduce((t, tr) => tr.type === "Income" ? t + Number(tr.amount) : t - Number(tr.amount), 0);
+}
+function renderUsers(monthYear = null){
+  const userTable = document.getElementById('userTable');
+  userTable.innerHTML="";
+  users.forEach((u,i)=>{
+    const balance = monthYear ? getMonthlyBalance(u, monthYear) : getUserBalance(u);
+    const transactions = getMonthlyTransactions(u, monthYear).length;
+    
+    let tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${u.name}</td>
+        <td>${u.email}</td>
+        <td>${transactions}</td>
+        <td>
+            <div class="action-buttons">
+                <button class="view" onclick="viewUser(${i})">View</button>
+                <button class="delete" onclick="deleteUser(${i})">Delete</button>
+            </div>
+        </td>`;
+    userTable.appendChild(tr);
+  }
+)}
+function viewUser(index){
+  modalUser = users[index]; 
+  document.getElementById('modalName').textContent = modalUser.name;
+  document.getElementById('modalEmail').textContent = modalUser.email;
+  const blockBtn = document.getElementById('blockUserBtn');
+  if (modalUser.isBlocked) {
+      blockBtn.textContent = 'Unblock User';
+      blockBtn.style.backgroundColor = '#4CAF50';
+  } else {
+      blockBtn.textContent = 'Block User';
+      blockBtn.style.backgroundColor = '#c62828';
+  }
+  const globalMonthYear = document.getElementById('globalFilterMonthYear').value;
+  document.getElementById('filterMonthYear').value = globalMonthYear;
+  applyFilters(); 
+  document.getElementById('userModal').style.display="flex";
+}
+function toggleBlockUser() {
+    if (!modalUser) return; 
+    const userIndex = users.findIndex(u => u.email === modalUser.email);
+    if (userIndex === -1) return;
+
+    const newStatus = !modalUser.isBlocked;
+    modalUser.isBlocked = newStatus;
+    users[userIndex].isBlocked = newStatus;
+
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert(`${modalUser.name} has been ${newStatus ? 'BLOCKED' : 'UNBLOCKED'}.`);
+
+    const blockBtn = document.getElementById('blockUserBtn');
+    if (newStatus) {
+        blockBtn.textContent = 'Unblock User';
+        blockBtn.style.backgroundColor = '#4CAF50';
+    } else {
+        blockBtn.textContent = 'Block User';
+        blockBtn.style.backgroundColor = '#c62828';
+    }
+}
+function renderUserGoals(monthYear) {
+  const goalsDiv = document.getElementById('modalGoals');
+  goalsDiv.innerHTML = ""; 
+  const goalsTitle = document.getElementById('goalMonthDisplayAdmin');
+  const monthDisplay = monthYear ? new Date(monthYear + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : "All Time (N/A)";
+  goalsTitle.textContent = monthDisplay;
+  if (!modalUser || !modalUser.monthlyGoals || !monthYear) {
+      goalsDiv.innerHTML = `<p>No monthly goals data available, or a month filter is not selected.</p>`;
+      return;
+  } 
+  const transactions = modalUser.transactions || [];
+  const [year, month] = monthYear.split('-'); 
+  const monthKey = `${parseInt(month) - 1}-${year}`;
+  const monthGoals = modalUser.monthlyGoals[monthKey] 
+                     ? modalUser.monthlyGoals[monthKey] 
+                     : { overall: 0, categories: {} };
+
+  let html = "";
+  const monthlyTransactions = transactions.filter(t => t.date.startsWith(monthYear));
+  const spent = monthlyTransactions.filter(t => t.type === "Expense").reduce((a, b) => a + Number(b.amount), 0);
+  if (monthGoals.overall > 0) {
+    const overallGoal = monthGoals.overall;
+    const percent = Math.min((spent / overallGoal) * 100, 100).toFixed(2);
+    const color = spent > overallGoal ? "#ef5350" : "#4caf50"; 
+    html += `<div style="padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+      <strong>Overall Monthly Goal:</strong> ₹${overallGoal.toFixed(2)} | Spent: ₹${spent.toFixed(2)}
+      <div style="height:20px; border-radius:6px; background:#eee; margin-top:5px; overflow:hidden;">
+        <div style="height:100%; width:${percent}%; background:${color}; color:#fff; text-align:right; padding-right:5px; line-height:20px; font-size:12px;">${percent}%</div>
+      </div>
+    </div>`;
+  }
+  const categoryGoals = monthGoals.categories;
+  Object.keys(categoryGoals).forEach(cat => {
+    const catGoal = categoryGoals[cat];
+    const catSpent = monthlyTransactions.filter(t => t.type === "Expense" && t.category === cat).reduce((a, b) => a + Number(b.amount), 0);
+    const percent = Math.min((catSpent / catGoal) * 100, 100).toFixed(2);
+    const color = catSpent > catGoal ? "#ef5350" : "#2196f3";
+    html += `<div style="padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+      <strong>${cat} Goal:</strong> ₹${catGoal.toFixed(2)} | Spent: ₹${catSpent.toFixed(2)}
+      <div style="height:20px; border-radius:6px; background:#eee; margin-top:5px; overflow:hidden;">
+        <div style="height:100%; width:${percent}%; background:${color}; color:#fff; text-align:right; padding-right:5px; line-height:20px; font-size:12px;">${percent}%</div>
+      </div>
+    </div>`;
+  });  
+  if (html === "") {
+      goalsDiv.innerHTML = `<p>No goals set for ${monthDisplay}.</p>`;
+  } else {
+      goalsDiv.innerHTML = html;
+  }
+}
+function applyFilters(){
+  if (!modalUser) return;  
+  const cat = document.getElementById('filterCategory').value;
+  const type = document.getElementById('filterType').value;
+  const monthYear = document.getElementById('filterMonthYear').value;  
+  const tbody = document.getElementById('modalTransactions');
+  tbody.innerHTML=""; 
+  let filteredTransactions = (modalUser.transactions||[]).filter(t=>{
+    let valid=true;
+    if(cat && t.category!==cat) valid=false;
+    if(type && t.type!==type) valid=false;
+    if(monthYear && !t.date.startsWith(monthYear)) valid=false;
+    return valid;
+  }); 
+  const filteredBalance = filteredTransactions.reduce((t,tr)=>tr.type==="Income"?t+Number(tr.amount):t-Number(tr.amount),0);
+  document.getElementById('modalBalance').textContent = filteredBalance.toFixed(2); 
+  filteredTransactions.forEach(t=>{
+    let tr = document.createElement('tr');
+    tr.innerHTML=`<td>${t.date}</td><td>${t.category}</td><td>${t.reason}</td><td>₹${t.amount}</td><td>${t.type}</td>`;
+    tbody.appendChild(tr);
+  });
+  renderUserGoals(monthYear);
+  const categories = ["Food","Rent","Shopping","Transport","Utilities","Entertainment","Health Care",
+  "Lent Money","Borrowed Money","Groceries","Books & Learning Materials","Retirement Savings",
+  "Insurance Premiums","Beauty / Personal Care / Salon","House Maintenance / Repairs",
+  "Home Appliances / Electronics","Child Expenses / School Fees","Events & Celebrations","Family Expenses"];
+  const colors = ["#FF6384","#36A2EB","#FFCE56","#4BC0C0","#9966FF","#FF9F40","#8DD1E1","#FFB6C1","#C0C0C0","#FFD700",
+  "#00FA9A","#DC143C","#8B008B","#FF4500","#2E8B57","#1E90FF","#FF1493","#7B68EE","#ADFF2F"];
+  const expenseData = categories.map(cat=>{
+    return filteredTransactions.filter(t=>t.category===cat && t.type==="Expense").reduce((s,t)=>s+Number(t.amount),0);
+  });
+  if(modalGraph) modalGraph.destroy();
+  const ctx = document.getElementById('modalChart').getContext('2d');
+  modalGraph = new Chart(ctx, {type:'bar',data:{labels:categories,datasets:[{label:'Expenses',data:expenseData,backgroundColor:colors}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+}
+function downloadCSV(){ 
+  if(!modalUser || !modalUser.transactions) return; 
+  const monthYear = document.getElementById('filterMonthYear').value; 
+  const filteredTransactions = getMonthlyTransactions(modalUser, monthYear);
+  const header=["Date","Category","Reason","Amount","Type"];
+  const rows = filteredTransactions.map(t=>[t.date,t.category,t.reason,t.amount,t.type]);
+  let csv = [header,...rows].map(e=>e.join(",")).join("\n");
+  let blob = new Blob([csv],{type:"text/csv"});
+  let a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${modalUser.name}_transactions${monthYear ? `_${monthYear}` : ''}.csv`;
+  a.click();
+}
+function deleteUser(index){ 
+  if(confirm("Delete user?")){ 
+    users.splice(index,1);
+    localStorage.setItem('users',JSON.stringify(users));
+    document.getElementById('totalUsers').textContent = users.length;
+    updateDashboardMetrics(); 
+  }
+}
+function closeModal(id){ document.getElementById(id).style.display="none"; }
+function filterTable(col, value){
+  const table=document.getElementById('userTable');
+  Array.from(table.rows).forEach((row,i)=>{
+    const cell=row.cells[col]?.innerText.toLowerCase();
+    row.style.display = cell && cell.includes(value.toLowerCase()) ? "" : "none";
+  });
+}
+function logout(){ 
+  localStorage.removeItem('currentAdmin');
+  alert("Logged out! Redirect to login page...");
+    window.location.href = "admin login.html"; 
+}
+document.getElementById('themeToggle').addEventListener('click',()=>{
+  document.body.classList.toggle('dark-mode');
+});
+function updateDashboardMetrics() {
+    const monthYear = document.getElementById('globalFilterMonthYear').value;   
+    renderUsers(monthYear);
+    document.getElementById('totalUsers').textContent = users.length;
+    document.getElementById('totalAdmins').textContent = admins.length;
+    const netBalanceHeading = document.querySelector('.balance-box h3');
+    const netBalanceValue = document.getElementById('netBalanceValue');
+    const balanceBox = document.querySelector('.balance-box');
+    if (monthYear) {
+        const totalMonthlyBalance = users.reduce((sum, u) => sum + getMonthlyBalance(u, monthYear), 0);
+        netBalanceHeading.textContent = `Net Balance (${monthYear})`;
+        netBalanceValue.textContent = `₹${totalMonthlyBalance.toFixed(2)}`;
+        balanceBox.setAttribute('onclick', 'showBalanceRanking(true)');
+    } else {
+        netBalanceHeading.textContent = `Net Balance Ranking`;
+        netBalanceValue.textContent = 'Click to View';
+        balanceBox.setAttribute('onclick', 'showBalanceRanking()');
+    }
+}
+function showUserList() {
+  const tbody = document.getElementById('userListTable');
+  tbody.innerHTML = "";
+  users.forEach(u => {
+    let tr = document.createElement('tr');
+    tr.innerHTML = `<td>${u.name}</td><td>${u.email}</td><td>₹${getUserBalance(u).toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('userListModal').style.display = "flex";
+}
+function showAdminList() {
+  const tbody = document.getElementById('adminListTable');
+  tbody.innerHTML = "";
+  admins.forEach(a => {
+    let tr = document.createElement('tr');
+    tr.innerHTML = `<td>${a.name}</td><td>${a.email}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('adminListModal').style.display = "flex";
+}
+function showBalanceRanking(isMonthly = false) {
+  const tbody = document.getElementById('balanceTable');
+  tbody.innerHTML = "";  
+  const monthYear = isMonthly ? document.getElementById('globalFilterMonthYear').value : null;
+  const sortedUsers = [...users].sort((a, b) => {
+        const balanceA = monthYear ? getMonthlyBalance(a, monthYear) : getUserBalance(a);
+        const balanceB = monthYear ? getMonthlyBalance(b, monthYear) : getUserBalance(b);
+        return balanceB - balanceA;
+    });
+    const modalTitle = document.querySelector('#balanceModal .modal-content h2');
+    modalTitle.textContent = monthYear ? `Users Sorted by Balance (${monthYear})` : 'Users Sorted by Balance (All Time)';
+  sortedUsers.forEach(u => {
+    const balance = monthYear ? getMonthlyBalance(u, monthYear) : getUserBalance(u);
+    let tr = document.createElement('tr');
+    tr.innerHTML = `<td>${u.name}</td><td>${u.email}</td><td>₹${balance.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('balanceModal').style.display = "flex";
+}
+updateDashboardMetrics(); 
+</script>
+</body>
+</html>
